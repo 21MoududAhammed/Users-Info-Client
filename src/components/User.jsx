@@ -1,40 +1,59 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 
-export default function UserEntryForm() {
+
+export default function User() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const initialValue = {
     name: "",
     email: "",
   };
   const [userInfo, setUserInfo] = useState(initialValue);
-
-  //  submit user information to create a user
-  const handleSubmit = async (e) => {
+//  update a user 
+  const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:5000/users`, {
-        method: "POST",
+      const res = await fetch(`http://localhost:5000/users/${id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(userInfo),
       });
-      if (res.status === 201) {
-        const data = await res.json();
-        console.log(data);
-        setUserInfo(initialValue);
+      if (res.status === 200) {
+        navigate('/users')
+        alert("Updated");
       }
+     
     } catch (err) {
       console.log(err);
     }
   };
-
+  //   load a user
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/users/${id}`);
+        if (res.status === 200) {
+          const data = await res.json();
+          // eslint-disable-next-line no-unused-vars
+          const { _id, ...user } = data;
+          setUserInfo(user);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchUser();
+  }, [id]);
   return (
     <section className="max-w-4xl p-6 mx-auto bg-white rounded-md shadow-md dark:bg-gray-800">
       <h2 className="text-lg font-semibold text-gray-700 capitalize dark:text-white">
-        Entry A User
+        Update a user
       </h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleUpdate}>
         <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
           <div>
             <label
@@ -73,7 +92,7 @@ export default function UserEntryForm() {
         </div>
         <div className="flex justify-end mt-6">
           <button className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600">
-            Create
+            Save
           </button>
         </div>
       </form>
