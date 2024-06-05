@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function UserEntryForm() {
   const initialValue = {
@@ -55,6 +56,7 @@ export default function UserEntryForm() {
           </button>
         </div>
       </form>
+      <Link to="/users">Go to Users Page --</Link>
     </section>
   );
 }
